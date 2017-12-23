@@ -2,7 +2,7 @@
  * 获取一级书目信息
  */
 const request = require('request');
-const cheerio = require('cheerio');
+const cheerio = require('cheerio'); 
 const fs = require('fs');
 const async = require("async");
 const logger = require('../config/log');
