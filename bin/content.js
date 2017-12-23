@@ -14,6 +14,7 @@ const {
     getModel
 } = require('../model/content');
 const {
+    sleep,
     replaceStr,
     noResourceNotice,
     reg,
@@ -205,4 +206,4 @@ const saveAllContentToDB = async(result, bookName, key, resolve) => {
     resolve(true);
 }
 
-contentListInit();
+module.exports = contentListInit;

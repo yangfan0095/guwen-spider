@@ -106,17 +106,18 @@ const saveMongoDB = async(chapterList, callback) => {
         callback(null, null);
         return;
     }
+
     let dbLength = await bookHelper.getCollectionLength(chapterListModel, {
         key: curkey
     })
-    let remoteBookList = await bookHelper.getCollectionByDistinct(chapterListModel, 'key');
-    logger.info('当前数据库已保存' + remoteBookList.length);
 
     if (dbLength === length) {
-        logger.warn('抓取数据与数据库保存数据默认条数相同，默认已存在，执行下一条数据。' + 'bookName:' + bookName + 'key: ' + curkey);
+        logger.warn('抓取数据等于数据库保存数据条数，默认认为该书籍已存在，执行下一条数据。' + 'bookName:' + bookName + 'key: ' + curkey);
         callback(null, null);
         return;
     }
+    let remoteBookList = await bookHelper.getCollectionByDistinct(chapterListModel, 'key');
+    logger.info('当前数据库已保存' + remoteBookList.length);
     let num = Math.random() * 700 + 800;
     await sleep(num);
     let falg = await bookHelper.insertCollection(chapterListModel, chapterList);
