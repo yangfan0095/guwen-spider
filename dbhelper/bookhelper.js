@@ -52,5 +52,15 @@ class bookHelper {
         }
         return flag;
     }
+    /**
+     * 查询章节列表
+     * @param {*} Model 
+     * @param {*} query 
+     * @return {Array}
+     */
+    static async querySectionList(Model, query) {
+        let res = await Model.find(query);
+        return res;
+    }
 }
 module.exports = bookHelper;

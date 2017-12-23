@@ -121,11 +121,52 @@ const getSectionFromChapter = (chapterList = [], bookInfo) => {
     });
     return sectionArr;
 }
+
+const replaceStr = function (str, reg, replace) {
+    if (!str) {
+        return
+    }
+    return reg(str, replaceFront.reg, replaceFront.replace, curChapter[1]).replace(replaceEnd.reg, replaceEnd.replace)
+
+}
+
+const noResourceNotice = function (url, title, detail) {
+    console.log('当前项：' + title + '  ' + detail + '  url :' + url);
+    return ''
+}
+
+//正则替换
+const reg = function (str, reg, replace, flag) {
+    if (!str) {
+        console.log(flag + ' 项没有数据')
+        return
+    } else {
+        return str.replace(reg, replace)
+    }
+
+}
+
+// 替换为本正则匹配
+const replaceFront = {
+    reg: /<p.*?>/g,
+    replace: ''
+};
+const replaceEnd = {
+    reg: /<\/p.*?>/g,
+    replace: '<br/>'
+}
+
 module.exports = {
     sleep,
     getPageUrlList,
     getCurPageBookList,
     getNewBookListArray,
     getListUrlAndTitle,
-    getSectionFromChapter
+    getSectionFromChapter,
+    replaceStr,
+    noResourceNotice,
+    reg,
+    replaceFront,
+    replaceEnd
+
 };

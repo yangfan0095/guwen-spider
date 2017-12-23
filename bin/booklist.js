@@ -15,11 +15,13 @@ const {
 } = require('../utils/utils');
 const bookHelper = require('../dbhelper/bookhelper');
 
-//所有基准url  需要根据爬取页面自己配置
-const origin = 'http://so.gushiwen.org';
-const website = 'http://so.gushiwen.org/guwen/book_5.aspx';
-const baseUrl = 'http://so.gushiwen.org/guwen/Default.aspx?p=';
-const totalListPage = 18;
+// 基准数据
+const {
+    origin,
+    website,
+    baseUrl,
+    totalListPage
+} = require('../config/booklistconf');
 
 /**
  * 初始化方法 返回抓取结果 true 抓取成果 false 抓取失败
