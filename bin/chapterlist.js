@@ -14,14 +14,13 @@ const {
     getSectionFromChapter
 } = require('../utils/utils');
 const bookHelper = require('../dbhelper/bookhelper');
-
-const origin = 'http://so.gushiwen.org';
 /**
  * 初始化入口
  */
-const init = async() => {
+const chapterListInit = async() => {
     const list = await bookHelper.getBookList(bookListModel);
     if (list) {
+        logger.info('开始抓取书籍章节列表，书籍目录共：' + list.length + '条');
         asyncGetChapter(list);
     } else {
         logger.error('初始化查询书籍目录失败');
@@ -37,7 +36,7 @@ const asyncGetChapter = (list) => {
     async.mapLimit(list, 1, (series, callback) => {
         let doc = series._doc;
         let bookInfo = {
-            dbName: doc.dbName,
+            key: doc.key,
             bookName: doc.bookName,
             author: doc.author,
         }
@@ -95,21 +94,21 @@ const getChapterInfo = (url, bookInfo, callback) => {
  */
 const saveMongoDB = async(chapterList, callback) => {
     let length = chapterList.length;
-    let curDbName = chapterList[0].dbName;
+    let curkey = chapterList[0].key;
     let bookName = chapterList[0].bookName;
     if (length === 0) {
-        logger.warn('抓取数据长度为空，执行下一条数据。' + 'bookName:' + bookName + 'dbName: ' + curDbName);
+        logger.warn('抓取数据长度为空，执行下一条数据。' + 'bookName:' + bookName + 'key: ' + curkey);
         callback(null, null);
         return;
     }
     let dbLength = await bookHelper.getCollectionLength(chapterListModel, {
-        dbName: curDbName
+        key: curkey
     })
-    let remoteBookList = await bookHelper.getCollectionByDistinct(chapterListModel, 'dbName');
+    let remoteBookList = await bookHelper.getCollectionByDistinct(chapterListModel, 'key');
     logger.info('当前数据库已保存' + remoteBookList.length);
 
     if (dbLength === length) {
-        logger.warn('抓取数据与数据库保存数据默认条数相同，默认已存在，执行下一条数据。' + 'bookName:' + bookName + 'dbName: ' + curDbName);
+        logger.warn('抓取数据与数据库保存数据默认条数相同，默认已存在，执行下一条数据。' + 'bookName:' + bookName + 'key: ' + curkey);
         callback(null, null);
         return;
     }
@@ -117,11 +116,11 @@ const saveMongoDB = async(chapterList, callback) => {
     await sleep(num);
     let falg = await bookHelper.insertCollection(chapterListModel, chapterList);
     if (!falg) {
-        logger.error('数据插入失败，进入下一组!' + 'bookName:' + bookName + 'dbName: ' + curDbName);
+        logger.error('数据插入失败，进入下一组!' + 'bookName:' + bookName + 'key: ' + curkey);
         callback(null, null);
         return;
     }
-    logger.info('数据保存成功!' + 'bookName:' + bookName + 'dbName: ' + curDbName);
+    logger.info('数据保存成功!' + 'bookName:' + bookName + 'key: ' + curkey);
     callback(null, null);
 }
-init();
+module.exports = chapterListInit;
