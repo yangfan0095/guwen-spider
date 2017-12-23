@@ -46,11 +46,10 @@ class bookHelper {
      */
     static async insertCollection(Model, insertList) {
         let flag = true;
-        await Model.collection.insert(insertList, (err, doc) => {
-            if (err) {
-                falg = false;
-            }
-        });
+        let res = await Model.collection.insert(insertList);
+        if (!res) {
+            flag = false;
+        }
         return flag;
     }
 }

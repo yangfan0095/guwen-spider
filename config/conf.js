@@ -6,7 +6,7 @@ module.exports = {
     originIp: '47.52.115.169',
     localPort: 27017,
     db: {
-        guwenlist: 'guwenlistDB',
+        guwenlist: 'guwenlistDBtest',
         booklist: 'guwenbookDB'
     },
     collection: {

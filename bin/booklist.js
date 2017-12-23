@@ -21,11 +21,14 @@ const website = 'http://so.gushiwen.org/guwen/book_5.aspx';
 const baseUrl = 'http://so.gushiwen.org/guwen/Default.aspx?p=';
 const totalListPage = 18;
 
-//初始化
-const bookListInit = (callback) => {
+/**
+ * 初始化方法 返回抓取结果 true 抓取成果 false 抓取失败
+ */
+const bookListInit = async() => {
     logger.info('抓取书籍列表开始...');
     const pageUrlList = getPageUrlList(totalListPage, baseUrl);
-    getBookList(pageUrlList, callback);
+    let res = await getBookList(pageUrlList);
+    return res;
 }
 
 /**
@@ -36,17 +39,20 @@ const bookListInit = (callback) => {
  * @param {*} pageUrlList 
  * @param {*} callback  这个参数如果传入，书籍列表抓取完成后可执行下一步操作。
  */
-const getBookList = (pageUrlList, callback) => {
-    async.mapLimit(pageUrlList, 3, (series, callback) => {
-        getCurPage(series, callback)
-    }, (err, result) => {
-        if (err) {
-            logger.error('书籍目录抓取异步执行出错!');
-            logger.error(err);
-            return;
-        }
-        let booklist = getNewBookListArray(result);
-        saveDB(booklist, callback);
+const getBookList = (pageUrlList) => {
+    return new Promise((resolve, reject) => {
+        async.mapLimit(pageUrlList, 3, (series, callback) => {
+            getCurPage(series, callback)
+        }, (err, result) => {
+            if (err) {
+                logger.error('书籍目录抓取异步执行出错!');
+                logger.error(err);
+                reject(false);
+                return;
+            }
+            let booklist = getNewBookListArray(result);
+            saveDB(booklist, resolve);
+        })
     })
 }
 
@@ -86,7 +92,7 @@ const saveDB = async(result, callback) => {
     logger.info('完成一级目录数据抓取和保存');
     //判断是否有回调 有则执行回调函数
     if (typeof callback === 'function') {
-        callback();
+        callback(true);
     }
 }
 

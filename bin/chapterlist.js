@@ -19,12 +19,12 @@ const bookHelper = require('../dbhelper/bookhelper');
  */
 const chapterListInit = async() => {
     const list = await bookHelper.getBookList(bookListModel);
-    if (list) {
-        logger.info('开始抓取书籍章节列表，书籍目录共：' + list.length + '条');
-        asyncGetChapter(list);
-    } else {
+    if (!list) {
         logger.error('初始化查询书籍目录失败');
     }
+    logger.info('开始抓取书籍章节列表，书籍目录共：' + list.length + '条');
+    let res = await asyncGetChapter(list);
+    return res;
 };
 
 /**
@@ -33,20 +33,25 @@ const chapterListInit = async() => {
  * @param {*} list 
  */
 const asyncGetChapter = (list) => {
-    async.mapLimit(list, 1, (series, callback) => {
-        let doc = series._doc;
-        let bookInfo = {
-            key: doc.key,
-            bookName: doc.bookName,
-            author: doc.author,
-        }
-        getChapterInfo(doc.bookUrl, bookInfo, callback)
-    }, (err, result) => {
-        if (err) {
-            console.log(err);
-        }
-        logger.info('数据抓取结束:');
-
+    return new Promise((resolve, reject) => {
+        async.mapLimit(list, 1, (series, callback) => {
+            let doc = series._doc;
+            let bookInfo = {
+                key: doc.key,
+                bookName: doc.bookName,
+                author: doc.author,
+            }
+            getChapterInfo(doc.bookUrl, bookInfo, callback)
+        }, (err, result) => {
+            if (err) {
+                reject(false);
+                logger.error('章节数据抓取过程中出现异常:');
+                logger.error(err);
+                return;
+            }
+            resolve(true);
+            logger.info('数据抓取结束:');
+        })
     })
 }
 /**
