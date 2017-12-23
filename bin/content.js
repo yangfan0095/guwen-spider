@@ -1,3 +1,6 @@
+/**
+ * 书籍内容抓取
+ */
 const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');

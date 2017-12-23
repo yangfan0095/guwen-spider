@@ -25,7 +25,7 @@ const start = async() => {
         return;
     }
     logger.info('书籍章节列表抓取成功，现在进行书籍内容抓取...');
-    
+
     let contentListRes = await contentListInit();
     if (!contentListRes) {
         logger.warn('书籍章节内容抓取出错，程序终止...');
@@ -33,7 +33,7 @@ const start = async() => {
     }
     logger.info('书籍内容抓取成功');
 }
-
+// 开始入口
 if (typeof bookListInit === 'function' && typeof chapterListInit === 'function') {
     // 开始抓取
     start();

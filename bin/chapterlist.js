@@ -1,3 +1,6 @@
+/**
+ * 章节列表抓取
+ */
 const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');
@@ -7,7 +10,6 @@ const {
     bookListModel,
     chapterListModel
 } = require('../model/guwen');
-
 const {
     sleep,
     getListUrlAndTitle,
