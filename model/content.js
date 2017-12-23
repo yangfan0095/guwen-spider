@@ -15,7 +15,7 @@ const bookItemSchema = mongoose.Schema({
     author: String,
     chapter: String,
     content: String,
-    title: String,
+    section: String,
     translator: String,
     translate: String,
     originUrl: String,
@@ -30,7 +30,14 @@ const errorSpider = mongoose.Schema({
     bookName: String,
     author: String,
 })
+// 保存出错的数据名称 只保留key 和 bookName信息
+const errorCollection = mongoose.Schema({
+    key: String,
+    bookName: String,
+})
+// 两个集合随便选一个就行。
 const errContentModel = conno.model('errorSpider', errorSpider);
+const errorCollectionModel = conno.model('errorCollection', errorCollection);
 
 /**
  * 创建一个 model 
@@ -42,5 +49,6 @@ const getModel = (collectionName) => {
 }
 module.exports = {
     getModel,
-    errContentModel
+    errContentModel,
+    errorCollectionModel
 }

@@ -100,7 +100,7 @@ const getListUrlAndTitle = ($, selector) => {
 
 
 /**
- * 遍历二级章节 返回文档 行数据
+ * 遍历二级章节 返回集合 行数据
  * @param {*} chapterList 
  * @param {*} bookInfo 
  */
@@ -145,6 +145,17 @@ const reg = function (str, reg, replace, flag) {
     }
 
 }
+/**
+ * 直接遍历dom获取翻译内容  用reg（）亦可 需要处理span  和h1
+ * @param {*} $ 
+ */
+const getTranslate = ($) => {
+    let tempArr= [];
+    $('.shisoncont p').each((index,el)=>{
+        tempArr.push($(el).text());
+    });
+    return tempArr.join('</br>');
+}
 
 // 替换为本正则匹配
 const replaceFront = {
@@ -167,6 +178,7 @@ module.exports = {
     noResourceNotice,
     reg,
     replaceFront,
-    replaceEnd
+    replaceEnd,
+    getTranslate
 
 };

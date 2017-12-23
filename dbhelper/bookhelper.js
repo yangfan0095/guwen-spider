@@ -53,6 +53,16 @@ class bookHelper {
         return flag;
     }
     /**
+     * 使用create方法批量插入数据到集合中 
+     * @param {*} Model
+     * @param {Array} insertList
+     * @return {Boolean} flag
+     */
+    static async addCreateCollection(Model, insertList) {
+        let res = await Model.create(insertList);
+        return res;
+    }
+    /**
      * 查询章节列表
      * @param {*} Model 
      * @param {*} query 
