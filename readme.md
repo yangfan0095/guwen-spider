@@ -7,11 +7,15 @@ npm install
 npm run start
 
 ![](images/2017-12-24-11-45-48.png)
+
 ### 前言
+
 之前研究数据，零零散散的写过一些数据抓取的爬虫，不过写的比较随意。有很多地方现在看起来并不是很合理 这段时间比较闲，本来是想给之前的项目做重构的。
 后来 利用这个周末，索性重新写了一个项目，就是本项目 spider-lab。目前这个爬虫还是比较简单的类型的， 直接抓取页面，然后在页面中提取数据，保存数据到数据库。
 通过与之前写的对比，我觉得难点在于整个程序的健壮性，以及相应的容错机制。在昨天写代码的过程中其实也有反映， 真正的主体代码其实很快就写完了 ，花了大部分时间是在
 做稳定性的调试， 以及以一种更合理的方式处理数据与流程控制及算法的关系。
+
+### 概述
 
 项目主要用到了 
 * 1 ES7的 async await 协程做异步有关的逻辑处理。
@@ -79,5 +83,106 @@ if (typeof bookListInit === 'function' && typeof chapterListInit === 'function')
 
 目前我们考虑到 其实我们要抓取到的古文书籍数量并不多，古文书籍大概只有180本囊括了各种经史。其和章节内容本身是一个很小的数据 ，即一个集合里面有180个文档记录。 这180本书所有章节抓取下来一共有一万六千个章节，对应需要访问一万六千个页面爬取到对应的内容。所以选择第二种应该是合理的。
 
+书籍目录抓取其实逻辑非常简单，只需要使用async.mapLimit做一个遍历就可以保存数据了,但是我们在保存内容的时候 简化的逻辑其实就是 遍历章节列表 抓取链接里的内容。但是实际的情况是链接数量多达几万 我们从内存占用角度也不能全部保存到一个数组中，然后对其遍历，所以我们需要对内容抓取进行单元化。
+普遍的遍历方式 是每次查询一定的数量，来做抓取，这样缺点是只是以一定数量做分类，数据之间没有关联，一批量方式进行插入，如果出错 则容错会有一些小问题，而且我们想一本书作为一个集合单独保存会遇到问题。因此我们采用第二种就是一一个书籍单元进行内容抓取和保存
 
+```
+ /* 
+ * 内容抓取步骤：
+ * 第一步得到书籍列表， 通过书籍列表查到一条书籍记录下 对应的所有章节列表， 
+ * 第二步 对章节列表进行遍历获取内容保存到数据库中 
+ * 第三步 保存完数据后 回到第一步 进行下一步书籍的内容抓取和保存
+ */
+
+/**
+ * 初始化入口
+ */
+const contentListInit = async() => {
+    //获取书籍列表
+    const list = await bookHelper.getBookList(bookListModel);
+    if (!list) {
+        logger.error('初始化查询书籍目录失败');
+        return;
+    }
+    const res = await mapBookList(list);
+    if (!res) {
+        logger.error('抓取章节信息，调用 getCurBookSectionList() 进行串行遍历操作，执行完成回调出错，错误信息已打印，请查看日志!');
+        return;
+    }
+    return res;
+}
+
+```
+
+这里我们通过key 来给数据做分类，每次按照key来获取链接，进行遍历，这样的好处是保存的数据是一个整体，现在思考数据保存的问题 
+* 1 可以以整体的方式进行插入 
+   
+    优点 : 速度快 数据库操作不浪费时间。 
+
+    缺点 : 有的书籍可能有几百个章节 也就意味着要先保存几百个页面的内容再进行插入，这样做同样很消耗内存，有可能造成程序运行不稳定。 
+* 2可以以每一篇文章的形式插入数据库。
+    
+    优点 : 页面抓取即保存的方式 使得数据能够及时保存，即使后续出错也不需要重新保存前面的章节， 
+    
+    缺点 : 也很明显 就是慢 ，仔细想想如果要爬几万个页面 做 几万次*N 数据库的操作 这里还可以做一个缓存器一次性保存一定条数 当条数达到再做保存这样也是一个不错的选择。
+
+```
+/**
+ * 遍历单条书籍下所有章节 调用内容抓取方法
+ * @param {*} list 
+ */
+const mapSectionList = (list) => {
+    return new Promise((resolve, reject) => {
+        async.mapLimit(list, 1, (series, callback) => {
+            let doc = series._doc;
+            getContent(doc, callback)
+        }, (err, result) => {
+            if (err) {
+                logger.error('书籍目录抓取异步执行出错!');
+                logger.error(err);
+                reject(false);
+                return;
+            }
+            const bookName = list[0].bookName;
+            const key = list[0].key;
+
+            // 以整体为单元进行保存
+            saveAllContentToDB(result, bookName, key, resolve);
+
+            //以每篇文章作为单元进行保存
+            // logger.info(bookName + '数据抓取完成，进入下一部书籍抓取函数...');
+            // resolve(true);
+
+        })
+    })
+}
+
+```
+两者各有利弊，这里我们都做了尝试。 准备了两个错误保存的集合,errContentModel, errorCollectionModel,在插入出错时 分别保存信息到对应的集合中，二者任选其一即可。增加集合来保存数据的原因是 便于一次性查看以及后续操作， 不用看日志。
+
+（PS ，其实完全用 errorCollectionModel 这个集合就可以了  ，errContentModel这个集合可以完整保存章节信息）
+```
+//保存出错的数据名称
+const errorSpider = mongoose.Schema({
+    chapter: String,
+    section: String,
+    url: String,
+    key: String,
+    bookName: String,
+    author: String,
+})
+// 保存出错的数据名称 只保留key 和 bookName信息
+const errorCollection = mongoose.Schema({
+    key: String,
+    bookName: String,
+})
+
+```
+
+
+我们将每一条书籍信息的内容 放到一个新的集合中，集合以key来进行命名。
+
+## 总结
+
+写这个项目 其实主要的难点在于程序稳定性的控制，容错机制的设置，以及错误的记录，目前这个项目基本能够实现直接运行 一次性跑通整个流程。 但是程序设计也肯定还存在许多问题 ，欢迎指正和交流。
 

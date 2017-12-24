@@ -128,7 +128,11 @@ const mapSectionList = (list) => {
             }
             const bookName = list[0].bookName;
             const key = list[0].key;
+
+            // 以整体为单元进行保存
             saveAllContentToDB(result, bookName, key, resolve);
+
+            //以每篇文章作为单元进行保存
             // logger.info(bookName + '数据抓取完成，进入下一部书籍抓取函数...');
             // resolve(true);
 
