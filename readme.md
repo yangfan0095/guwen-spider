@@ -186,3 +186,13 @@ const errorCollection = mongoose.Schema({
 
 写这个项目 其实主要的难点在于程序稳定性的控制，容错机制的设置，以及错误的记录，目前这个项目基本能够实现直接运行 一次性跑通整个流程。 但是程序设计也肯定还存在许多问题 ，欢迎指正和交流。
 
+
+写完这个项目 做了一个基于React开的前端网站用于页面浏览 和一个基于koa2.x开发的服务端, 
+整体技术栈相当于是 React + Redux + Koa2
+本项对应前端  地址[github地址](https://github.com/yangfan0095/guwen-react)
+本项对应Node端 地址[github地址](https://github.com/yangfan0095/guwen-node)
+
+项目挺简单的 ，但是多了一个学习和研究 从前端到服务端的开发的环境。
+
+
+以上です
