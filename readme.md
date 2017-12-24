@@ -14,9 +14,9 @@ npm run start
 * 本项对应前端 React + Redux + semantic-ui   地址 : [guwen-react](https://github.com/yangfan0095/guwen-react)
 * 本项对应Node端 Koa2.2 + mongoose  地址 : [guwen-node](https://github.com/yangfan0095/guwen-node)
 
-## 项目体会和总结
+## 项目体会
 ### 前言
-
+˜
 之前研究数据，零零散散的写过一些数据抓取的爬虫，不过写的比较随意。有很多地方现在看起来并不是很合理 这段时间比较闲，本来是想给之前的项目做重构的。
 后来 利用这个周末，索性重新写了一个项目，就是本项目 guwen-spider。目前这个爬虫还是比较简单的类型的， 直接抓取页面，然后在页面中提取数据，保存数据到数据库。
 通过与之前写的对比，我觉得难点在于整个程序的健壮性，以及相应的容错机制。在昨天写代码的过程中其实也有反映， 真正的主体代码其实很快就写完了 ，花了大部分时间是在
