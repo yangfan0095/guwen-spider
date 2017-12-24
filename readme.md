@@ -1,6 +1,6 @@
-### node-spider
+### guwen-spider
 
-git clone https://github.com/yangfan0095/spider-lab.git
+git clone https://github.com/yangfan0095/guwen-spider.git
 
 npm install
 
