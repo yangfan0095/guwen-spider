@@ -3,7 +3,7 @@
  */
 module.exports = {
     localUrl: 'localhost',
-    originIp: '47.52.115.169',
+    originIp: '*',
     localPort: 27017,
     db: {
         guwenlist: 'guwenBookList',
