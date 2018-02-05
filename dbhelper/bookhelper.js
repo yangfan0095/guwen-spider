@@ -69,7 +69,19 @@ class bookHelper {
      * @return {Array}
      */
     static async querySectionList(Model, query) {
-        let res = await Model.find(query);
+        let res = await Model.find({}).limit(5);
+        return res;
+    }
+    static async queryFree(Model, query, filter, limit, skip) {
+        let res;
+        // 根据入参执行操作
+        if (!limit || !skip) {
+            res = await Model.find(query, filter)
+        } else {
+            res = await Model.find(query, filter).sort({
+                'countyHref': 1
+            }).limit(limit).skip(skip);
+        }
         return res;
     }
 }

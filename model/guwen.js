@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const q = require('q');
 const config = require('../config/conf');
 mongoose.Promise = q.Promise;
-const conno = mongoose.createConnection(`mongodb://${config.originIp}/${config.db.guwenlist}`, config.options);
+const conno = mongoose.createConnection(`mongodb://${config.localUrl}/${config.db.guwenlist}`, config.options);
 mongoose.connection.on('connected', function () {
     console.log("数据库连接成功！");
 });

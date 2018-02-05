@@ -1,0 +1,55 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarn add zlib
+
+PATH: 
+  /Users/fanyang/.nvm/versions/node/v7.10.1/bin/node/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/fanyang/.nvm/versions/node/v7.10.1/bin/node/bin
+
+Yarn version: 
+  0.22.0
+
+Node version: 
+  8.9.1
+
+Platform: 
+  darwin x64
+
+npm manifest: 
+  {
+    "name": "sipder-lab",
+    "version": "1.0.0",
+    "description": "nodeJs spider ,guwen,spider, 古文数据抓取,",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start":"node bin/index.js"
+    },
+    "keywords": [
+      "nodeJs",
+      "spider",
+      "guwen"
+    ],
+    "dependencies": {
+      "async": "^2.6.0",
+      "cheerio": "^0.19.0",
+      "colors": "^1.1.2",
+      "iconv-lite": "^0.4.18",
+      "log4js": "^2.4.1",
+      "mongoose": "^4.6.5",
+      "multi-progress": "^1.0.0",
+      "q": "^1.4.1",
+      "request": "^2.64.0"
+    },
+    "author": "yangfan0095",
+    "license": "ISC"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
+
+Trace: 
+  Error: getaddrinfo ENOTFOUND npm.qiyuesuo.net npm.qiyuesuo.net:80
+      at errnoException (dns.js:50:10)
+      at GetAddrInfoReqWrap.onlookup [as oncomplete] (dns.js:92:26)
